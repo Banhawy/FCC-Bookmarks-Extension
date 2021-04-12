@@ -8,7 +8,7 @@
         "default_icon": "fcc.png"
     },
     "background": {
-        "service_worker": "background.js"
+        "scripts": ["background.js"]
     },
     "permissions": ["storage", "bookmarks"],
     "commands": {

@@ -11,6 +11,7 @@
     "postcss-import": "^14.0.1"
   },
   "dependencies": {
+    "crx-hotreload": "^1.0.6",
     "tailwindcss": "^2.1.1"
   }
 }
