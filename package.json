@@ -1,0 +1,11 @@
+{
+  "name": "fcc-bookmarks",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Banhawy/FCC-Bookmarks-Extension.git",
+  "author": "Adham El Banhawy <the.benhawy@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "parcel": "^2.0.0-beta.2"
+  }
+}
