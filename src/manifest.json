@@ -1,0 +1,23 @@
+{
+    "name": "FCC Bookmarks",
+    "description": "Extension to save FCC articles",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {
+        "default_popup": "index.html",
+        "default_icon": "fcc.png"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": ["storage", "bookmarks"],
+    "commands": {
+        "_execute_action": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+F",
+                "mac": "MacCtrl+Shift+F"
+            },
+            "description": "Opens index.html"
+        }
+    }
+}
