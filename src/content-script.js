@@ -1,80 +1,23 @@
-import cssText from "bundle-text:../dist/style.css";
+import cssText from 'bundle-text:../dist/style.css'
 
-const html =
-`
+const tail = `
 <style>${cssText}</style>
-
-<section id="popup" class="font-sans text-black z-50 w-full fixed top-0 right-0 shadow-xl new-event-form bg-white max-w-sm border-2 border-black p-5 rounded-lg border-b-6">
-  <header class="flex mb-5 pl-1 items-center justify-between">
-    <span class="text-2xl text-black font-extrabold">New event!</span>
-  </header>
-  <main class="event-name-input mb-6">
-    <div class="mb-6">
-      <label
-        for="event-name"
-        class="font-bold pl-1 block mb-1 text-black text-xl"
-        >
-      Event name
-      </label>
-      <div class="duration-400 flex bg-white border-black border-2 rounded-lg py-4 px-4 text-black text-xl focus-within:shadow-outline">
-        <input
-          id="event-name"
-          name="event-name"
-          type="text"
-          placeholder="web.dev LIVE"
-          class="font-medium w-full focus:outline-none"
-          />
-      </div>
-    </div>
-    </div>
-    <div class="mb-6">
-      <label
-        for="event-date"
-        class="font-bold pl-1 block mb-1 text-black text-xl"
-        >
-      Date
-      </label>
-      <div class="event-date-input duration-400 border-black flex bg-white border-2 rounded-lg py-4 px-4  text-xl focus-within:shadow-outline">
-        <input
-          id="event-date"
-          name="event-date"
-          type="date"
-          class="font-medium w-full focus:outline-none"
-          />
-      </div>
-    </div>
-    <div class=" mb-8">
-    <label
-      for="event-time-input"
-      class="font-bold pl-1 block mb-1  text-xl"
-      >
-    Time
-    </label>
-    <div class="inline-flex items-center">
-      <input
-        id="event-time-input"
-        type="time"
-        value="17:30"
-        class="border-black mr-4 lowercase duration-400 w-auto bg-white text-xl border-2  rounded-lg px-4 py-4 focus:outline-none focus:shadow-outline"
-        />
-      <div class="inline-flex flex-col">
-        <span class="text-xl font-bold">Casablanca</span>
-        <span class="text-base font-normal">Africa</span>
-      </div>
-    </div>
-  </main>
-  <footer>
-  <button 
-    class="duration-400 bg-green-400 text-xl py-4 w-full rounded-lg border-2 border-b-6 leading-7 font-extrabold border-black focus:outline-none focus:shadow-outline"
-    >
-  Save
-  </button>
-  </footer
-</section>
+<div class="mt-5 flex lg:mt-0 lg:ml-4">
+    <span class="hidden sm:block">
+      <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <!-- Heroicon name: solid/pencil -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4v12l-4-2-4 2V4M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        Bookmark
+      </button>
+    </span>
 `
-
-const shadowHost = document.createElement("div");
-document.body.insertAdjacentElement("beforebegin", shadowHost);
-const shadowRoot = shadowHost.attachShadow({ mode: 'open' });
-
-shadowRoot.innerHTML = html
+const authorDiv = document.querySelector(
+    '#site-main > div > article > div > section'
+)
+const bookmarkDiv = document.createElement('div')
+bookmarkDiv.style.margin = '2rem'
+authorDiv.insertAdjacentElement('beforeend', bookmarkDiv)
+const shadowRoot = bookmarkDiv.attachShadow({ mode: 'open' })
+shadowRoot.innerHTML = tail
