@@ -7,8 +7,8 @@
   "scripts": {
     "prebuild": "rm -rf dist .cache .parcel-cache",
     "build:tailwind": "tailwindcss build src/style.css -c ./tailwind.config.js -o dist/style.css",
-    "watch": "NODE_ENV=development yarn build:tailwind && cp src/manifest.json dist/ && parcel watch --no-hmr src/{background.js,content-script.js,popup.js}",
-    "build": "NODE_ENV=production yarn build:tailwind && cp src/manifest.json dist/ && parcel build src/{background.js,content-script.js}"
+    "watch": "NODE_ENV=development yarn build:tailwind && cp src/manifest.json dist/ && cp src/fcc.png dist/ && parcel watch --no-hmr src/{background.js,content-script.js,popup.js}",
+    "build": "NODE_ENV=production yarn build:tailwind && cp src/manifest.json dist/ && cp src/fcc.png dist/ && parcel build src/{background.js,content-script.js}"
   },
   "devDependencies": {
     "@parcel/transformer-inline-string": "2.0.0-nightly.639",
@@ -17,7 +17,6 @@
     "postcss-import": "^14.0.1"
   },
   "dependencies": {
-    "crx-hotreload": "^1.0.6",
     "postcss": "^8.2.10",
     "tailwindcss": "^2.1.1"
   }
