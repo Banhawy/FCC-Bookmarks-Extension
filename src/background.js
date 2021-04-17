@@ -1,13 +1,21 @@
 const { runtime, bookmarks } = chrome
-let FCCFolder
+let getFCCFolder = () =>
+    new Promise((resolve, _reject) => {
+        bookmarks.getTree((bookmarksTree) => {
+            resolve(
+                bookmarksTree[0].children[1].children.filter(
+                    (child) => child.title === 'FCC Articles'
+                )[0]
+            )
+        })
+    })
 
 runtime.onInstalled.addListener((_details) => {
-    bookmarks.getTree((bookmarksTree) => {
+    bookmarks.getTree(async (bookmarksTree) => {
         console.log(bookmarksTree)
         // Find an existing 'FCC Articles' bookmarks folder
-        FCCFolder = bookmarksTree[0].children[1].children.filter(
-            (child) => child.title === 'FCC Articles'
-        )[0]
+        FCCFolder = await getFCCFolder()
+        console.log({ FCCFolder })
         // If it doesn't exist create it
         if (!FCCFolder) {
             bookmarks.create({ title: 'FCC Articles' }, (bookmark) => {
@@ -50,7 +58,8 @@ runtime.onInstalled.addListener((_details) => {
 runtime.onConnect.addListener((port) => {
     console.assert(port.name == 'bookmarker')
 
-    port.onMessage.addListener((request) => {
+    port.onMessage.addListener(async (request) => {
+        let FCCFolder = await getFCCFolder()
         const { messageType } = request
 
         if (messageType === 'checkUrlInBookmarks') {
@@ -91,10 +100,10 @@ runtime.onConnect.addListener((port) => {
                     (bookmark) => bookmark.url === request.url
                 )
                 if (bookmarkToDelete.length > 0) {
-									bookmarks.remove(bookmarkToDelete[0].id, () => {
-											port.postMessage({ successful: true, messageType })
-									})
-								}
+                    bookmarks.remove(bookmarkToDelete[0].id, () => {
+                        port.postMessage({ successful: true, messageType })
+                    })
+                }
             })
         }
     })
