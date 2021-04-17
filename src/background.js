@@ -1,7 +1,7 @@
 const { runtime, bookmarks } = chrome
 let FCCFolder
 
-runtime.onInstalled.addListener((details) => {
+runtime.onInstalled.addListener((_details) => {
     bookmarks.getTree((bookmarksTree) => {
         console.log(bookmarksTree)
         // Find an existing 'FCC Articles' bookmarks folder
@@ -15,42 +15,87 @@ runtime.onInstalled.addListener((details) => {
                 FCCFolder = bookmark
             })
 
-						// Look for any previously bookmarked FCC articles and copy them to the FCC Articles Folder
-						bookmarks.search('https://freecodecamp.org/news/', (searchedBookmarksTree) => {
-							if (searchedBookmarksTree.length > 0) {
-								// Create an array of just bookmarked url strings
-								let FCCBookmarks = searchedBookmarksTree.map(bookmark => bookmark.url)
-								// Check if the root news route is present in the bookmarks & remove it
-								const rootNewsSiteIndex = FCCBookmarks.indexOf('https://www.freecodecamp.org/news/')
-								const rootNewsSiteIsPresent = rootNewsSiteIndex > -1
-								if (rootNewsSiteIsPresent) {
-									searchedBookmarksTree.splice(rootNewsSiteIndex ,1)
-								}
-								// Map through each bookemarked FCC Article and copy it to our extension's bookmarks folder
-								searchedBookmarksTree.forEach((fccArticle) => {
-									bookmarks.create({
-											parentId: FCCFolder.id,
-											title: fccArticle.title,
-											url: fccArticle.url
-									})
-								})
-							}
-						})
+            // Look for any previously bookmarked FCC articles and copy them to the FCC Articles Folder
+            bookmarks.search(
+                'https://freecodecamp.org/news/',
+                (searchedBookmarksTree) => {
+                    if (searchedBookmarksTree.length > 0) {
+                        // Create an array of just bookmarked url strings
+                        let FCCBookmarks = searchedBookmarksTree.map(
+                            (bookmark) => bookmark.url
+                        )
+                        // Check if the root news route is present in the bookmarks & remove it
+                        const rootNewsSiteIndex = FCCBookmarks.indexOf(
+                            'https://www.freecodecamp.org/news/'
+                        )
+                        const rootNewsSiteIsPresent = rootNewsSiteIndex > -1
+                        if (rootNewsSiteIsPresent) {
+                            searchedBookmarksTree.splice(rootNewsSiteIndex, 1)
+                        }
+                        // Map through each bookemarked FCC Article and copy it to our extension's bookmarks folder
+                        searchedBookmarksTree.forEach((fccArticle) => {
+                            bookmarks.create({
+                                parentId: FCCFolder.id,
+                                title: fccArticle.title,
+                                url: fccArticle.url
+                            })
+                        })
+                    }
+                }
+            )
         }
-
     })
 })
 
-runtime.onMessage.addListener( (request, sender, sendResponse) => {
-	if (request.messageType === 'checkUrlInBookmarks') {
-		let isBookmarkFound = false
+runtime.onConnect.addListener((port) => {
+    console.assert(port.name == 'bookmarker')
 
-		FCCFolder.children.forEach(bookmark => {
-			if (bookmark.url === request.url) {
-				isBookmarkFound = true
-			}
-		})
-		
-		sendResponse({ isBookmarkFound })
-	}
+    port.onMessage.addListener((request) => {
+        const { messageType } = request
+
+        if (messageType === 'checkUrlInBookmarks') {
+            let isBookmarkFound = false
+            console.log({ FCCFolder })
+            bookmarks.getChildren(FCCFolder.id, (FCCBookmarksTree) => {
+                console.log({ FCCBookmarksTree })
+                FCCBookmarksTree.forEach((bookmark) => {
+                    if (bookmark.url === request.url) {
+                        isBookmarkFound = true
+                    }
+                })
+                console.log('Sending response: ', isBookmarkFound)
+                port.postMessage({ isBookmarkFound, messageType })
+            })
+        }
+
+        if (messageType === 'bookmark') {
+            // add to bookmarks
+            console.log(FCCFolder)
+            bookmarks.get(FCCFolder.id, (FCCBookmarksTree) => {
+                const createDetails = {
+                    parentId: FCCFolder.id,
+                    url: request.url,
+                    title: request.title
+                }
+                bookmarks.create(createDetails, (createdBookmark) => {
+                    console.log(createdBookmark)
+                    port.postMessage({ successful: true, messageType })
+                })
+            })
+        }
+
+        if (messageType === 'remove') {
+            // remove from bookmarks
+            bookmarks.getChildren(FCCFolder.id, (FCCBookmarksTree) => {
+                const bookmarkToDelete = FCCBookmarksTree.filter(
+                    (bookmark) => bookmark.url === request.url
+                )
+                if (bookmarkToDelete.length > 0) {
+									bookmarks.remove(bookmarkToDelete[0].id, () => {
+											port.postMessage({ successful: true, messageType })
+									})
+								}
+            })
+        }
+    })
 })
