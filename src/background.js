@@ -1,9 +1,11 @@
 const { runtime, bookmarks } = chrome
+let FCCFolder
+
 runtime.onInstalled.addListener((details) => {
     bookmarks.getTree((bookmarksTree) => {
         console.log(bookmarksTree)
         // Find an existing 'FCC Articles' bookmarks folder
-        let FCCFolder = bookmarksTree[0].children[1].children.filter(
+        FCCFolder = bookmarksTree[0].children[1].children.filter(
             (child) => child.title === 'FCC Articles'
         )[0]
         // If it doesn't exist create it
@@ -37,4 +39,18 @@ runtime.onInstalled.addListener((details) => {
         }
 
     })
+})
+
+runtime.onMessage.addListener( (request, sender, sendResponse) => {
+	if (request.messageType === 'checkUrlInBookmarks') {
+		let isBookmarkFound = false
+
+		FCCFolder.children.forEach(bookmark => {
+			if (bookmark.url === request.url) {
+				isBookmarkFound = true
+			}
+		})
+		
+		sendResponse({ isBookmarkFound })
+	}
 })
