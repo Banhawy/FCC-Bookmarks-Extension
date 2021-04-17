@@ -2,7 +2,7 @@ import cssText from 'bundle-text:../dist/style.css'
 
 const url = document.URL
 const title = document.title
-const port = chrome.runtime.connect({ name: 'bookmarker' })
+let port = chrome.runtime.connect({ name: 'bookmarker' })
 let shadowRoot
 
 const createButtonHTML = (articleInBookmarks) => {
@@ -80,23 +80,34 @@ const addListenerToButton = () => {
 }
 
 const listenForMessages = () => {
-    port.onMessage.addListener((response) => {
-        const { messageType } = response
-        switch (messageType) {
-            case 'checkUrlInBookmarks':
-                injectBookmarksButton(response.isBookmarkFound)
-                break
-            case 'bookmark':
-                updateBookmarksButton(true)
-                break
-            case 'remove':
-                updateBookmarksButton(false)
-                break
-            default:
-                console.error('Unhandled messageType', messageType)
-        }
-        addListenerToButton()
+    const responseHandler = (response) => {
+      const { messageType } = response
+      switch (messageType) {
+          case 'checkUrlInBookmarks':
+              injectBookmarksButton(response.isBookmarkFound)
+              break
+          case 'bookmark':
+              updateBookmarksButton(true)
+              break
+          case 'remove':
+              updateBookmarksButton(false)
+              break
+          default:
+              console.error('Unhandled messageType', messageType)
+      }
+      addListenerToButton()
+  }
+    port.onMessage.addListener(responseHandler)
+
+    port.onDisconnect.addListener(port => {
+      reconnect()
     })
+}
+
+const reconnect = () => {
+  console.log('reconnecting')
+  port = chrome.runtime.connect({ name: 'bookmarker' })
+  listenForMessages()
 }
 
 checkArticleInBookmarks()
