@@ -32,7 +32,7 @@ const injectBookmarksButton = articleInBookmarks => {
 }
 
 const checkArticleInBookmarks = () =>
-    new Promise((resolve, reject) => {
+    new Promise((resolve, _) => {
         const messageBody = {
             messageType: 'checkUrlInBookmarks',
             url: document.URL
@@ -44,4 +44,4 @@ const checkArticleInBookmarks = () =>
           )
     })
 
-checkArticleInBookmarks().then((articleInBookmarks) => injectBookmarksButton(articleInBookmarks))
+checkArticleInBookmarks().then((isArticleBookmarked) => injectBookmarksButton(isArticleBookmarked))
