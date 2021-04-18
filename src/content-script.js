@@ -46,25 +46,14 @@ const injectBookmarksButton = (articleInBookmarks) => {
         // Create a shadow DOM to isolate our custom div from external styles and apply only our own
         shadowRoot = bookmarkDiv.attachShadow({ mode: 'open' })
         shadowRoot.innerHTML = bookmarkHTML
-
-        return shadowRoot
     }
 }
 
-const updateBookmarksButton = (articleInBookmarks) => {
-    const { buttonHTML } = createButtonHTML(articleInBookmarks)
+const updateBookmarksButton = ({ putArticleInBookmarks }) => {
+    const { buttonHTML } = createButtonHTML(putArticleInBookmarks)
     const updatedBookmarkDiv = document.createElement('div')
     updatedBookmarkDiv.innerHTML = buttonHTML
     shadowRoot.getElementById('bookmark').replaceWith(updatedBookmarkDiv)
-}
-
-const checkArticleInBookmarks = () => {
-    const messageBody = {
-        messageType: 'checkUrlInBookmarks',
-        url
-    }
-
-    port.postMessage(messageBody)
 }
 
 const addListenerToButton = () => {
@@ -79,6 +68,20 @@ const addListenerToButton = () => {
     })
 }
 
+const reconnect = () => {
+  port = chrome.runtime.connect({ name: 'bookmarker' })
+  listenForMessages()
+}
+
+const checkArticleInBookmarks = () => {
+  const messageBody = {
+      messageType: 'checkUrlInBookmarks',
+      url
+  }
+
+  port.postMessage(messageBody)
+}
+
 const listenForMessages = () => {
     const responseHandler = (response) => {
       const { messageType } = response
@@ -87,10 +90,10 @@ const listenForMessages = () => {
               injectBookmarksButton(response.isBookmarkFound)
               break
           case 'bookmark':
-              updateBookmarksButton(true)
+              updateBookmarksButton({ putArticleInBookmarks: true })
               break
           case 'remove':
-              updateBookmarksButton(false)
+              updateBookmarksButton({ putArticleInBookmarks: false })
               break
           default:
               console.error('Unhandled messageType', messageType)
@@ -102,12 +105,6 @@ const listenForMessages = () => {
     port.onDisconnect.addListener(port => {
       reconnect()
     })
-}
-
-const reconnect = () => {
-  console.log('reconnecting')
-  port = chrome.runtime.connect({ name: 'bookmarker' })
-  listenForMessages()
 }
 
 checkArticleInBookmarks()
