@@ -1,8 +1,7 @@
-let action = document.getElementById('action')
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-action.addEventListener('click', () => {
-    chrome.bookmarks.search('freecodecamp.org/news', (btree) => {
-        console.log('ok...')
-        console.log('OI:', btree)
-    })
-})
+ReactDOM.render(
+  <p>Hi</p>,
+  document.getElementById('root'),
+)
