@@ -16,7 +16,7 @@
           "js": ["content-script.js"]
         }
     ],
-    "permissions": ["storage", "bookmarks"],
+    "permissions": ["storage", "bookmarks", "tabs"],
     "commands": {
         "_execute_action": {
             "suggested_key": {
