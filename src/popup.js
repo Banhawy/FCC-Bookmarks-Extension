@@ -1,7 +1,17 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import Card from './components/Card'
+
+
+const PopUp = () => {
+    return (
+        <div className="">
+            <Card />
+        </div>
+    )
+}
 
 ReactDOM.render(
-  <p>Hi</p>,
+  <PopUp />,
   document.getElementById('root'),
 )
