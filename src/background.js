@@ -106,5 +106,15 @@ runtime.onConnect.addListener((port) => {
                 }
             })
         }
+
+        if (messageType === 'getAllArticles') {
+            bookmarks.getChildren(FCCFolder.id, (FCCBookmarksTree) =>
+                port.postMessage({
+                    successful: true,
+                    data: FCCBookmarksTree,
+                    messageType
+                })
+            )
+        }
     })
 })
